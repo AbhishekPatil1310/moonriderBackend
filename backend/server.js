@@ -14,7 +14,31 @@ import "./src/config/passport.js"; // Google OAuth strategy
 
 const app = express();
 
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+// ✅ Deployment-ready CORS
+const allowedOrigins = [
+  process.env.FRONTEND_URL,         // your deployed frontend
+  "http://localhost:5173",          // local dev (Vite default)
+  "http://localhost:3000",          // local dev (CRA/Next.js default)
+   "https://moonrider-frontend-2hjp.vercel.app",
+    "https://moonrider-frontend-2hjp-q6ihrubqf-abhisheks-projects-680a2fd9.vercel.app"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Parse cookies & JSON
 app.use(cookieParser());
 app.use(express.json());
 app.use(passport.initialize());
@@ -25,9 +49,13 @@ app.use("/api/bikedata", BikeRouter);
 app.use("/api/users", userRouter);
 app.use("/api/contact", contactRouter);
 
-// Connect DB and start server
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
+// DB connection
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB error:", err));
 
-app.listen(process.env.PORT, () => console.log(`Server running on ${process.env.PORT}`));
+// Start server
+app.listen(process.env.PORT, () =>
+  console.log(`🚀 Server running on port ${process.env.PORT}`)
+);
