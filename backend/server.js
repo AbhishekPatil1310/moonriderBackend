@@ -20,7 +20,8 @@ const allowedOrigins = [
   "http://localhost:5173",          // local dev (Vite default)
   "http://localhost:3000",          // local dev (CRA/Next.js default)
    "https://moonrider-frontend-2hjp.vercel.app",
-    "https://moonrider-frontend-2hjp-q6ihrubqf-abhisheks-projects-680a2fd9.vercel.app"
+    "https://moonrider-frontend-2hjp-q6ihrubqf-abhisheks-projects-680a2fd9.vercel.app",
+  "https://moonrider-frontend-lgjdaa64j-abhisheks-projects-680a2fd9.vercel.app"
 ];
 
 app.use(
@@ -59,3 +60,4 @@ mongoose
 app.listen(process.env.PORT, () =>
   console.log(`🚀 Server running on port ${process.env.PORT}`)
 );
+
