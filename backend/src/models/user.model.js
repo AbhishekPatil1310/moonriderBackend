@@ -46,9 +46,12 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
       minlength: 6,
       select: false,
+      required: function () {
+        // Password required only for non-Google users
+        return !this.googleId;
+      },
     },
     googleId: {
       type: String,
@@ -126,7 +129,9 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+// Hash password before saving
 userSchema.pre('save', async function (next) {
+  // Skip if password not modified
   if (!this.isModified('password')) return next();
 
   // Skip password hashing for Google OAuth users
@@ -134,12 +139,15 @@ userSchema.pre('save', async function (next) {
 
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
+
+  // Clear reset OTPs on password save
   this.passreOTP = undefined;
   this.passreOTPExpires = undefined;
 
   next();
 });
 
+// Compare passwords
 userSchema.methods.isPasswordMatch = function (plain) {
   return bcrypt.compare(plain, this.password);
 };
