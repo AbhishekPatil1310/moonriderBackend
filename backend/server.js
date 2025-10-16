@@ -21,7 +21,8 @@ const allowedOrigins = [
    "https://moonrider-frontend-2hjp.vercel.app",
     "https://moonrider-frontend-2hjp-q6ihrubqf-abhisheks-projects-680a2fd9.vercel.app",
   "https://moonrider-frontend-lgjdaa64j-abhisheks-projects-680a2fd9.vercel.app",
-"https://moonrider-frontend.vercel.app"
+"https://moonrider-frontend.vercel.app",
+  "https://www.advestors.org"
 ];
 
 app.use(
@@ -60,5 +61,6 @@ mongoose
 app.listen(process.env.PORT, () =>
   console.log(`🚀 Server running on port ${process.env.PORT}`)
 );
+
 
 
