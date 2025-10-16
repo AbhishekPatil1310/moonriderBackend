@@ -131,21 +131,28 @@ const userSchema = new Schema(
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
-  // Skip if password not modified
+  // Skip if password field not modified
   if (!this.isModified('password')) return next();
 
-  // Skip password hashing for Google OAuth users
-  if (this.password === 'google-oauth-user') return next();
+  // Skip hashing for OAuth users or missing password
+  if (!this.password || typeof this.password !== 'string' || this.password === 'google-oauth-user') {
+    return next();
+  }
 
-  const salt = await bcrypt.genSalt(12);
-  this.password = await bcrypt.hash(this.password, salt);
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
 
-  // Clear reset OTPs on password save
-  this.passreOTP = undefined;
-  this.passreOTPExpires = undefined;
+    // clear any reset OTP fields on password save
+    this.passreOTP = undefined;
+    this.passreOTPExpires = undefined;
 
-  next();
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
+
 
 // Compare passwords
 userSchema.methods.isPasswordMatch = function (plain) {
@@ -155,3 +162,4 @@ userSchema.methods.isPasswordMatch = function (plain) {
 const User = model('User', userSchema);
 
 export default User;
+
