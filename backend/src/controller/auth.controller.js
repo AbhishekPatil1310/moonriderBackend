@@ -134,5 +134,6 @@ export const googleCallback = (req, res) => {
       sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
-    .redirect(`${process.env.FRONTEND_URL}/oauth`);
+    .redirect(`${process.env.FRONTEND_URL}/dashboard`);
 };
+
